@@ -1,0 +1,56 @@
+/* Media queries */
+@media (min-width: 768px) {
+    /* Tablet */
+    .row > .md-4{
+        grid-column: span 4;
+    }
+
+    .row > .md-6{
+        grid-column: span 6;
+    }
+
+    .row > .md-1-6{
+        grid-column: 1 / 6;
+    }
+
+    .row > .md-7-13{
+        grid-column: 7 / 13;
+    }
+
+    .row > .md-1-8{
+        grid-column: 1 / 8;
+    }
+
+    .row > .md-9-13{
+        grid-column: 9 / 13;
+    }
+
+    /* Destaques */
+    .destaques__img{
+        max-width: 28.125em;
+    }
+
+    /* Sustentabilidade */
+    .sustentabilidade__container{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+    }
+
+    /* Footer */
+    .mainFooter__form{
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .mainFooter__input{
+        display: block;
+        width: 100%;
+        margin-bottom: 1em;
+    }
+
+    .btn-end{
+        align-self: flex-end;
+    }
+}

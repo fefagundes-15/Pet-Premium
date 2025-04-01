@@ -1,0 +1,85 @@
+/* Media queries */
+@media (min-width: 1024px) {
+    /* Desktop */
+    .row > .lg-3{
+        grid-column: span 3;
+    }
+
+    /* Hero Banner */
+    .heroBanner{
+        height: calc(100vh - var(--main-padding));
+    }
+
+    .heroBanner img{
+        height: 100%;
+        min-height: auto;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .heroBanner__content {
+        bottom: 20%;
+        left: .8rem;
+        max-width: 80%;
+    }
+
+    .heroBanner__subtitle {
+        font-size: 1.5rem;
+    }
+
+    .heroBanner__cta {
+        font-size: 1.2rem;
+    }
+
+    .sustentabilidade__container h3 {
+        font-size: 1.8rem;
+    }
+
+    .sustentabilidade__container p{
+        font-size: 1.3rem;
+    }
+
+    /* Vips */
+    .btn {
+        font-size: 1.1rem;
+    }
+
+    .vips__card li {
+        font-size: 1.1rem;
+    }
+
+    /* Artesanal */
+    .subtitle{
+        font-size: 1.6rem;
+    }
+
+    .artesanal__info h3 {
+        font-size: 1.8rem;
+    }
+
+    .artesanal__info p{
+        font-size: 1.1rem;
+    }
+
+    /* Footer */
+    .mainFooter{
+        margin: 2.5rem 0 0;
+        padding: 2.5em 3em;
+    }
+
+    .mainFooter__form {
+        display: flex;
+        flex-direction: row;
+        gap: 1.5rem;
+    }
+
+    .mainFooter__input {
+        display: block;
+        width: 100%;
+        margin-bottom: 0;
+    }
+
+    .btn-end {
+        align-self: auto;
+    }
+}

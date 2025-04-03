@@ -1,5 +1,6 @@
 html{
     background-color: color-mix(in srgb, var(--primary-color), #fff 20%);
+    scroll-behavior: smooth;
 }
 
 :root {

@@ -82,6 +82,7 @@ ul {
     top: 4.7em;
     max-height: 0;
     overflow: hidden;
+    background-color: var(--background-color);
     box-shadow: 5px 5px 5px rgb(212 175 55 / .3);
 
     transition: max-height .5s ease-in-out;

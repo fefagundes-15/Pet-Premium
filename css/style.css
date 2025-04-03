@@ -47,8 +47,8 @@ ul {
     justify-content: space-between;
     padding: 0 1.5em;
     align-items: center;
-    background-color: color-mix(in srgb, var(--background-color), transparent 20%);
-    backdrop-filter: blur(10px);
+    background-color: color-mix(in srgb, var(--background-color), transparent 30%);
+    backdrop-filter: blur(15px);
     box-shadow: 2px 2px 3px rgb(212 175 55 / .3);
 
     position: fixed;

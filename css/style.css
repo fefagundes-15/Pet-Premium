@@ -82,8 +82,7 @@ ul {
     top: 4.7em;
     max-height: 0;
     overflow: hidden;
-    background-color: color-mix(in srgb, var(--background-color), transparent 5%);
-    backdrop-filter: blur(3px);
+    background-color: var(--background-color);
     box-shadow: 5px 5px 5px rgb(212 175 55 / .3);
 
     transition: max-height .5s ease-in-out;

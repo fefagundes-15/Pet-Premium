@@ -28,7 +28,7 @@ ul {
 }
 
 .main__container > *:nth-child(even){
-    background-color: color-mix(in srgb, var(--primary-color), #fff 20%);
+    background-color: color-mix(in srgb, var(--primary-color), #fff 10%);
 }
 
 .main__container{

@@ -1,53 +1,68 @@
-// main.js - TypeScript-ready JavaScript with proper typing (No Node.js dependencies)
-
 // Mobile Menu Handler
 class MobileMenuHandler {
   private menuToggle: HTMLInputElement | null;
   private menuLinks: NodeListOf<HTMLAnchorElement>;
+  private overlay: HTMLDivElement | null;
 
   constructor() {
     this.menuToggle = document.getElementById("nav-toggle") as HTMLInputElement;
     this.menuLinks = document.querySelectorAll(".site-nav__link");
+    this.overlay = null;
+
+    this.createOverlay();
     this.init();
   }
 
   private init(): void {
-    if (this.menuToggle) {
-      this.menuLinks.forEach((link) => {
-        link.addEventListener("click", () => this.closeMenu());
+    if (!this.menuToggle) return;
+
+    // Fecha o menu sempre que um link do menu for clicado
+    this.menuLinks.forEach((link: HTMLAnchorElement) => {
+      link.addEventListener("click", () => {
+        this.closeMenu();
       });
+    });
 
-      // Close menu when clicking outside
-      document.addEventListener("click", (e: MouseEvent) =>
-        this.handleOutsideClick(e),
-      );
-
-      // Handle escape key
-      document.addEventListener("keydown", (e: KeyboardEvent) =>
-        this.handleEscapeKey(e),
-      );
+    // Overlay fecha o menu
+    if (this.overlay) {
+      this.overlay.addEventListener("click", () => this.closeMenu());
     }
+
+    // ESC fecha o menu
+    document.addEventListener("keydown", (e: KeyboardEvent) =>
+      this.handleEscapeKey(e),
+    );
+
+    // Quando o checkbox muda, atualiza estado visual/scroll
+    this.menuToggle.addEventListener("change", () => this.toggleMenuState());
+  }
+
+  private createOverlay(): void {
+    this.overlay = document.createElement("div");
+    this.overlay.className = "menu-overlay";
+    document.body.appendChild(this.overlay);
   }
 
   private closeMenu(): void {
-    if (this.menuToggle) {
+    if (this.menuToggle && this.menuToggle.checked) {
       this.menuToggle.checked = false;
+      this.toggleMenuState();
     }
   }
 
-  private handleOutsideClick(event: MouseEvent): void {
-    const target = event.target as HTMLElement;
-    const menu = document.querySelector(".site-nav__menu");
-    const icon = document.querySelector(".site-nav__icon");
+  private toggleMenuState(): void {
+    const isMenuOpen: boolean = this.menuToggle?.checked ?? false;
 
-    if (
-      this.menuToggle?.checked &&
-      menu &&
-      icon &&
-      !menu.contains(target) &&
-      !icon.contains(target)
-    ) {
-      this.closeMenu();
+    if (isMenuOpen) {
+      document.body.classList.add("menu-open");
+      if (this.overlay) {
+        this.overlay.classList.add("active");
+      }
+    } else {
+      document.body.classList.remove("menu-open");
+      if (this.overlay) {
+        this.overlay.classList.remove("active");
+      }
     }
   }
 
@@ -58,39 +73,44 @@ class MobileMenuHandler {
   }
 }
 
-// Smooth Scroll Handler
+// Smooth Scroll Handler – genérico para todos os links de âncora
 class SmoothScrollHandler {
   constructor() {
     this.init();
   }
 
   private init(): void {
-    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-      anchor.addEventListener("click", (e: Event) =>
-        this.handleClick(e, anchor as HTMLAnchorElement),
+    const links: NodeListOf<HTMLAnchorElement> =
+      document.querySelectorAll('a[href^="#"]');
+
+    links.forEach((anchor: HTMLAnchorElement) => {
+      const href = anchor.getAttribute("href");
+      if (!href || href === "#" || href === "#home") return;
+
+      anchor.addEventListener("click", (e: MouseEvent) =>
+        this.handleClick(e, anchor),
       );
     });
   }
 
-  private handleClick(e: Event, anchor: HTMLAnchorElement): void {
-    const targetId = anchor.getAttribute("href");
+  private handleClick(e: MouseEvent, anchor: HTMLAnchorElement): void {
+    const targetId: string | null = anchor.getAttribute("href");
+    if (!targetId) return;
 
-    if (targetId && targetId !== "#") {
-      const targetElement = document.querySelector(targetId);
+    const targetElement: Element | null = document.querySelector(targetId);
+    if (!targetElement) return;
 
-      if (targetElement) {
-        e.preventDefault();
-        const headerOffset = 80;
-        const elementPosition = targetElement.getBoundingClientRect().top;
-        const offsetPosition =
-          elementPosition + window.pageYOffset - headerOffset;
+    e.preventDefault();
 
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: "smooth",
-        });
-      }
-    }
+    const headerOffset: number = 80;
+    const elementPosition: number = targetElement.getBoundingClientRect().top;
+    const offsetPosition: number =
+      elementPosition + window.pageYOffset - headerOffset;
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: "smooth",
+    });
   }
 }
 
@@ -112,10 +132,10 @@ class NewsletterHandler {
   private handleSubmit(event: Event): void {
     event.preventDefault();
 
-    const emailInput = this.form?.querySelector(
+    const emailInput: HTMLInputElement | null = this.form?.querySelector(
       'input[type="email"]',
     ) as HTMLInputElement;
-    const email = emailInput?.value;
+    const email: string = emailInput?.value || "";
 
     if (email && this.validateEmail(email)) {
       this.showMessage("Inscrição realizada com sucesso!", "success");
@@ -126,27 +146,28 @@ class NewsletterHandler {
   }
 
   private validateEmail(email: string): boolean {
-    const re = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
+    const re: RegExp = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
     return re.test(email);
   }
 
   private showMessage(message: string, type: "success" | "error"): void {
-    const existingMessage = document.querySelector(".form-message");
+    const existingMessage: Element | null =
+      document.querySelector(".form-message");
     if (existingMessage) {
       existingMessage.remove();
     }
 
-    const messageElement = document.createElement("div");
+    const messageElement: HTMLDivElement = document.createElement("div");
     messageElement.className = `form-message form-message--${type}`;
     messageElement.textContent = message;
     messageElement.style.cssText = `
-            margin-top: 0.5rem;
-            padding: 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.875rem;
-            background: ${type === "success" ? "#d4edda" : "#f8d7da"};
-            color: ${type === "success" ? "#155724" : "#721c24"};
-        `;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.875rem;
+      background: ${type === "success" ? "#d4edda" : "#f8d7da"};
+      color: ${type === "success" ? "#155724" : "#721c24"};
+    `;
 
     this.form?.appendChild(messageElement);
 
@@ -172,19 +193,19 @@ class AnimationObserver {
   }
 
   private init(): void {
-    const animatedElements = document.querySelectorAll(
+    const animatedElements: NodeListOf<Element> = document.querySelectorAll(
       ".product-card, .testimonial-card, .plan-card",
     );
-    animatedElements.forEach((el) => {
+    animatedElements.forEach((el: Element) => {
       el.classList.add("animate-on-scroll");
       this.observer.observe(el);
     });
   }
 
   private handleIntersect(entries: IntersectionObserverEntry[]): void {
-    entries.forEach((entry) => {
+    entries.forEach((entry: IntersectionObserverEntry) => {
       if (entry.isIntersecting) {
-        entry.target.classList.add("animated");
+        (entry.target as HTMLElement).classList.add("animated");
         this.observer.unobserve(entry.target);
       }
     });
@@ -202,13 +223,14 @@ class LazyLoader {
   }
 
   private initLazyLoading(): void {
-    const images = document.querySelectorAll('img[loading="lazy"]');
-    const observer = new IntersectionObserver(
+    const images: NodeListOf<HTMLImageElement> = document.querySelectorAll(
+      'img[loading="lazy"]',
+    );
+    const observer: IntersectionObserver = new IntersectionObserver(
       (entries: IntersectionObserverEntry[]) => {
-        entries.forEach((entry) => {
+        entries.forEach((entry: IntersectionObserverEntry) => {
           if (entry.isIntersecting) {
-            const img = entry.target as HTMLImageElement;
-            // Type-safe way to set loading attribute
+            const img: HTMLImageElement = entry.target as HTMLImageElement;
             if ("loading" in img) {
               img.loading = "lazy";
             }
@@ -218,16 +240,15 @@ class LazyLoader {
       },
     );
 
-    images.forEach((img) => observer.observe(img));
+    images.forEach((img: HTMLImageElement) => observer.observe(img));
   }
 
   private fallbackLazyLoading(): void {
-    // Fallback for older browsers
-    const images = document.querySelectorAll("img");
-    images.forEach((img) => {
-      const htmlImg = img as HTMLImageElement;
-      if ("loading" in htmlImg) {
-        htmlImg.loading = "lazy";
+    const images: NodeListOf<HTMLImageElement> =
+      document.querySelectorAll("img");
+    images.forEach((img: HTMLImageElement) => {
+      if ("loading" in img) {
+        img.loading = "lazy";
       }
     });
   }
@@ -240,7 +261,8 @@ class CurrentYearHandler {
   }
 
   private updateYear(): void {
-    const yearElement = document.getElementById("current-year");
+    const yearElement: HTMLElement | null =
+      document.getElementById("current-year");
     if (yearElement) {
       yearElement.textContent = new Date().getFullYear().toString();
     }
@@ -264,21 +286,21 @@ class ScrollSpyHandler {
   }
 
   private updateActiveLink(): void {
-    let currentSection = "";
-    const scrollPosition = window.scrollY + 100;
+    let currentSection: string = "";
+    const scrollPosition: number = window.scrollY + 100;
 
-    this.sections.forEach((section) => {
-      const sectionTop = section.offsetTop;
-      const sectionBottom = sectionTop + section.offsetHeight;
+    this.sections.forEach((section: HTMLElement) => {
+      const sectionTop: number = section.offsetTop;
+      const sectionBottom: number = sectionTop + section.offsetHeight;
 
       if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
         currentSection = section.getAttribute("id") || "";
       }
     });
 
-    this.navLinks.forEach((link) => {
+    this.navLinks.forEach((link: HTMLAnchorElement) => {
       link.classList.remove("active");
-      const href = link.getAttribute("href");
+      const href: string | null = link.getAttribute("href");
       if (href === `#${currentSection}`) {
         link.classList.add("active");
       }
@@ -318,9 +340,11 @@ class FormValidator {
   }
 
   private init(): void {
-    const inputs = document.querySelectorAll(".footer-section__input");
-    inputs.forEach((input) => {
-      input.addEventListener("blur", (e: Event) =>
+    const inputs: NodeListOf<HTMLInputElement> = document.querySelectorAll(
+      ".footer-section__input",
+    );
+    inputs.forEach((input: HTMLInputElement) => {
+      input.addEventListener("blur", (e: FocusEvent) =>
         this.validateInput(e.target as HTMLInputElement),
       );
     });
@@ -328,7 +352,7 @@ class FormValidator {
 
   private validateInput(input: HTMLInputElement): void {
     if (input.type === "email") {
-      const isValid = this.validateEmail(input.value);
+      const isValid: boolean = this.validateEmail(input.value);
       if (!isValid && input.value !== "") {
         input.style.borderColor = "#dc3545";
         this.showInputError(input, "Digite um e-mail válido");
@@ -340,31 +364,33 @@ class FormValidator {
   }
 
   private validateEmail(email: string): boolean {
-    const re = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
+    const re: RegExp = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
     return re.test(email);
   }
 
   private showInputError(input: HTMLInputElement, message: string): void {
-    const existingError = input.parentElement?.querySelector(".input-error");
+    const existingError: Element | null =
+      input.parentElement?.querySelector(".input-error") || null;
     if (existingError) {
       existingError.remove();
     }
 
-    const errorElement = document.createElement("span");
+    const errorElement: HTMLSpanElement = document.createElement("span");
     errorElement.className = "input-error";
     errorElement.textContent = message;
     errorElement.style.cssText = `
-            font-size: 0.75rem;
-            color: #dc3545;
-            margin-top: 0.25rem;
-            display: block;
-        `;
+      font-size: 0.75rem;
+      color: #dc3545;
+      margin-top: 0.25rem;
+      display: block;
+    `;
 
     input.parentElement?.appendChild(errorElement);
   }
 
   private clearInputError(input: HTMLInputElement): void {
-    const error = input.parentElement?.querySelector(".input-error");
+    const error: Element | null =
+      input.parentElement?.querySelector(".input-error") || null;
     if (error) {
       error.remove();
     }
@@ -379,13 +405,14 @@ class PerformanceOptimizer {
   }
 
   private deferNonCritical(): void {
-    // Defer non-critical JavaScript using dynamic import pattern
-    const scripts = document.querySelectorAll("script[data-defer]");
+    const scripts: NodeListOf<HTMLScriptElement> =
+      document.querySelectorAll("script[data-defer]");
     if ("requestIdleCallback" in window) {
-      (window as any).requestIdleCallback(() => {
-        scripts.forEach((script) => {
-          const newScript = document.createElement("script");
-          const src = script.getAttribute("src");
+      // @ts-ignore
+      window.requestIdleCallback(() => {
+        scripts.forEach((script: HTMLScriptElement) => {
+          const newScript: HTMLScriptElement = document.createElement("script");
+          const src: string | null = script.getAttribute("src");
           if (src) {
             newScript.src = src;
           }
@@ -399,22 +426,17 @@ class PerformanceOptimizer {
   }
 
   private optimizeImages(): void {
-    // Add width and height to images to prevent layout shift
-    const images = document.querySelectorAll("img:not([width])");
-    images.forEach((img) => {
-      const htmlImg = img as HTMLImageElement;
-      // Check if image is already loaded and has natural dimensions
-      if (htmlImg.complete && htmlImg.naturalWidth) {
-        const naturalWidth = htmlImg.naturalWidth;
-        const naturalHeight = htmlImg.naturalHeight;
-        img.setAttribute("width", naturalWidth.toString());
-        img.setAttribute("height", naturalHeight.toString());
+    const images: NodeListOf<HTMLImageElement> =
+      document.querySelectorAll("img:not([width])");
+    images.forEach((img: HTMLImageElement) => {
+      if (img.complete && img.naturalWidth) {
+        img.setAttribute("width", img.naturalWidth.toString());
+        img.setAttribute("height", img.naturalHeight.toString());
       } else {
-        // If image not loaded yet, wait for load event
-        htmlImg.addEventListener("load", () => {
-          if (htmlImg.naturalWidth) {
-            img.setAttribute("width", htmlImg.naturalWidth.toString());
-            img.setAttribute("height", htmlImg.naturalHeight.toString());
+        img.addEventListener("load", () => {
+          if (img.naturalWidth) {
+            img.setAttribute("width", img.naturalWidth.toString());
+            img.setAttribute("height", img.naturalHeight.toString());
           }
         });
       }
@@ -424,7 +446,7 @@ class PerformanceOptimizer {
 
 // Back to Top Button Handler
 class BackToTopHandler {
-  private button: HTMLButtonElement | null;
+  private button: HTMLButtonElement;
 
   constructor() {
     this.button = this.createButton();
@@ -432,45 +454,43 @@ class BackToTopHandler {
   }
 
   private createButton(): HTMLButtonElement {
-    const btn = document.createElement("button");
+    const btn: HTMLButtonElement = document.createElement("button");
     btn.className = "back-to-top";
     btn.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
     btn.setAttribute("aria-label", "Voltar ao topo");
     btn.style.cssText = `
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 3rem;
-            height: 3rem;
-            border-radius: 50%;
-            background: var(--color-gold);
-            color: white;
-            border: none;
-            cursor: pointer;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            z-index: 999;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        `;
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      background: var(--color-gold);
+      color: white;
+      border: none;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 999;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    `;
     document.body.appendChild(btn);
     return btn;
   }
 
   private init(): void {
-    if (this.button) {
-      window.addEventListener("scroll", () => this.toggleVisibility());
-      this.button.addEventListener("click", () => this.scrollToTop());
-    }
+    window.addEventListener("scroll", () => this.toggleVisibility());
+    this.button.addEventListener("click", () => this.scrollToTop());
   }
 
   private toggleVisibility(): void {
     if (window.scrollY > 300) {
-      this.button!.style.opacity = "1";
-      this.button!.style.visibility = "visible";
+      this.button.style.opacity = "1";
+      this.button.style.visibility = "visible";
     } else {
-      this.button!.style.opacity = "0";
-      this.button!.style.visibility = "hidden";
+      this.button.style.opacity = "0";
+      this.button.style.visibility = "hidden";
     }
   }
 
@@ -479,6 +499,34 @@ class BackToTopHandler {
       top: 0,
       behavior: "smooth",
     });
+  }
+}
+
+// Responsive Handler
+class ResponsiveHandler {
+  constructor() {
+    this.init();
+  }
+
+  private init(): void {
+    window.addEventListener("resize", () => this.handleResize());
+  }
+
+  private handleResize(): void {
+    const menuToggle: HTMLInputElement | null = document.getElementById(
+      "nav-toggle",
+    ) as HTMLInputElement;
+    const isDesktop: boolean = window.innerWidth > 768;
+
+    if (isDesktop && menuToggle?.checked) {
+      menuToggle.checked = false;
+      document.body.classList.remove("menu-open");
+      const overlay: HTMLElement | null =
+        document.querySelector(".menu-overlay");
+      if (overlay) {
+        overlay.classList.remove("active");
+      }
+    }
   }
 }
 
@@ -495,100 +543,35 @@ document.addEventListener("DOMContentLoaded", () => {
   new FormValidator();
   new PerformanceOptimizer();
   new BackToTopHandler();
+  new ResponsiveHandler();
 });
 
 // Add CSS for animations and additional styles
-const style = document.createElement("style");
-style.textContent = `
-    .animate-on-scroll {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.6s ease, transform 0.6s ease;
+const styleElement: HTMLStyleElement = document.createElement("style");
+styleElement.textContent = `
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  
+  .animate-on-scroll.animated {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .back-to-top:hover {
+    transform: scale(1.1);
+    background: var(--color-gold-dark);
+  }
+  
+  @media (max-width: 768px) {
+    .back-to-top {
+      bottom: 1rem;
+      right: 1rem;
+      width: 2.5rem;
+      height: 2.5rem;
     }
-    
-    .animate-on-scroll.animated {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    
-    .site-nav__link.active {
-        color: var(--color-gold);
-    }
-    
-    .site-nav__link.active::after {
-        width: 100%;
-    }
-    
-    .form-message {
-        animation: slideIn 0.3s ease;
-    }
-    
-    .site-header {
-        transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    }
-    
-    .site-header--scrolled {
-        background: rgba(255, 255, 255, 0.98);
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    
-    .input-error {
-        animation: fadeIn 0.2s ease;
-    }
-    
-    .back-to-top:hover {
-        transform: scale(1.1);
-        background: var(--color-gold-dark);
-    }
-    
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
-    
-    /* Performance optimizations */
-    img {
-        content-visibility: auto;
-        contain: paint;
-    }
-    
-    /* Reduced motion preference */
-    @media (prefers-reduced-motion: reduce) {
-        * {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
-            scroll-behavior: auto !important;
-        }
-        
-        .back-to-top {
-            transition: none !important;
-        }
-    }
-    
-    /* Responsive adjustments for back to top button */
-    @media (max-width: 768px) {
-        .back-to-top {
-            bottom: 1rem;
-            right: 1rem;
-            width: 2.5rem;
-            height: 2.5rem;
-        }
-    }
+  }
 `;
-document.head.appendChild(style);
+document.head.appendChild(styleElement);

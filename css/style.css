@@ -11,20 +11,20 @@
     --color-light-gray: #f5f5f5;
     --color-white: #ffffff;
     --color-off-white: #F8F8F8;
-    
+
     --font-primary: 'Inter', sans-serif;
     --font-logo: 'Ephesis', cursive;
-    
+
     --spacing-xs: 0.25rem;
     --spacing-sm: 0.5rem;
     --spacing-md: 1rem;
     --spacing-lg: 2rem;
     --spacing-xl: 4rem;
     --spacing-xxl: 6rem;
-    
+
     --container-max-width: 120rem;
     --header-height: 5rem;
-    
+
     --transition-default: all 0.3s ease;
     --transition-slow: all 0.5s ease;
     --shadow-sm: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08);
@@ -56,7 +56,12 @@ body {
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-weight: 700;
     line-height: 1.2;
 }
@@ -105,7 +110,7 @@ ul {
     padding: 0 var(--spacing-lg);
 }
 
-.main-content__wrapper > *:nth-child(even) {
+.main-content__wrapper>*:nth-child(even) {
     background: linear-gradient(135deg, rgba(212, 175, 55, 0.05), rgba(212, 175, 55, 0.02));
     border-radius: 2rem;
 }
@@ -113,6 +118,7 @@ ul {
 /* Section Header */
 .section-header {
     text-align: center;
+    margin-top: var(--spacing-xl);
     margin-bottom: var(--spacing-xl);
 }
 
@@ -179,7 +185,7 @@ ul {
     gap: var(--spacing-xl);
 }
 
-/* Header */
+/* Header Styles - Logo Esquerda, Menu Centro, Login Direita */
 .site-header {
     position: fixed;
     top: 0;
@@ -189,6 +195,12 @@ ul {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(0.625rem);
     box-shadow: var(--shadow-sm);
+    transition: var(--transition-default);
+}
+
+.site-header--scrolled {
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.1);
 }
 
 .site-header__container {
@@ -199,16 +211,13 @@ ul {
     justify-content: space-between;
     align-items: center;
     height: var(--header-height);
+    gap: var(--spacing-lg);
 }
 
-.site-header__logo {
-    font-family: var(--font-logo);
-    font-size: 1.8rem;
-    color: var(--color-gold);
-    font-weight: 400;
-}
-
+/* Logo - Esquerda */
 .site-header__logo-link {
+    flex-shrink: 0;
+    text-decoration: none;
     transition: var(--transition-default);
 }
 
@@ -216,20 +225,21 @@ ul {
     transform: scale(1.02);
 }
 
-.site-header__user {
+.site-header__logo {
+    font-family: var(--font-logo);
+    font-size: 1.8rem;
     color: var(--color-gold);
-    font-size: 1.2rem;
-    padding: var(--spacing-sm);
-    transition: var(--transition-default);
+    font-weight: 400;
+    margin: 0;
+    line-height: 1;
 }
 
-.site-header__user:hover {
-    transform: translateY(-0.125rem);
-}
-
-/* Navigation */
+/* Navigation - Centro */
 .site-nav {
-    position: relative;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .site-nav__toggle {
@@ -240,6 +250,8 @@ ul {
     display: none;
     cursor: pointer;
     padding: var(--spacing-sm);
+    position: relative;
+    z-index: 1001;
 }
 
 .site-nav__hamburger,
@@ -252,51 +264,117 @@ ul {
     transition: var(--transition-default);
 }
 
+.site-nav__hamburger {
+    position: relative;
+}
+
 .site-nav__hamburger::before,
 .site-nav__hamburger::after {
     content: '';
     position: absolute;
+    left: 0;
 }
 
 .site-nav__hamburger::before {
-    transform: translateY(-0.5rem);
+    top: -0.5rem;
 }
 
 .site-nav__hamburger::after {
-    transform: translateY(0.5rem);
+    top: 0.5rem;
 }
 
 .site-nav__menu {
     display: flex;
     gap: var(--spacing-lg);
     list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
+/* Animações suaves para os links */
 .site-nav__link {
     font-weight: 500;
     color: var(--color-dark-gray);
     position: relative;
     padding: var(--spacing-sm) 0;
-}
-
-.site-nav__link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 0.125rem;
-    background-color: var(--color-gold);
-    transition: width 0.3s ease;
-}
-
-.site-nav__link:hover::after,
-.site-nav__link:focus::after {
-    width: 100%;
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.2s ease;
+    white-space: nowrap;
 }
 
 .site-nav__link:hover {
+    transform: translateY(-0.0625rem);
+}
+
+/* Linha amarela que aparece no hover e focus */
+.site-nav__link::after {
+    content: '';
+    position: absolute;
+    bottom: -0.125rem;
+    left: 0;
+    width: 0;
+    height: 0.125rem;
+    background: linear-gradient(90deg, var(--color-gold), var(--color-gold-light));
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 0.125rem;
+}
+
+.site-nav__link:hover::after,
+.site-nav__link:focus::after,
+.site-nav__link.active::after {
+    width: 100%;
+}
+
+.site-nav__link:hover,
+.site-nav__link:focus,
+.site-nav__link.active {
     color: var(--color-gold);
+}
+
+/* Actions - Direita */
+.site-header__actions {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.site-header__user {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--color-gold);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    transition: var(--transition-default);
+    text-decoration: none;
+    border: 0.0625rem solid var(--color-gold);
+    background: transparent;
+}
+
+.site-header__user i {
+    font-size: 1rem;
+}
+
+.site-header__user-text {
+    font-size: 0.875rem;
+}
+
+.site-header__user:hover {
+    background: var(--color-gold);
+    color: var(--color-white);
+    transform: translateY(-0.125rem);
+    box-shadow: var(--shadow-gold);
+}
+
+/* Accessibility Focus Styles */
+.site-nav__link:focus-visible,
+.site-header__user:focus-visible {
+    outline: 0.125rem solid var(--color-gold);
+    outline-offset: 0.125rem;
+    border-radius: 0.25rem;
 }
 
 /* Hero Section */
@@ -314,7 +392,15 @@ ul {
 
 .hero__container {
     position: relative;
-    aspect-ratio: 16 / 9;
+    width: 100%;
+    height: min(100vh, calc(100vw * 9 / 16));
+}
+
+.hero__picture,
+.hero__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .hero__picture {
@@ -348,6 +434,7 @@ ul {
         opacity: 0;
         transform: translateY(1.25rem);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -835,19 +922,41 @@ ul {
 
 /* Responsive Design */
 @media (max-width: 1024px) {
+
     .grid--sustainability,
     .grid--atelier {
         grid-template-columns: 1fr;
         gap: var(--spacing-lg);
     }
-    
+
     .section-header__title {
         font-size: 1.8rem;
     }
-    
+
     .sustainability__title,
     .atelier__title {
         font-size: 1.6rem;
+    }
+
+    .site-header__container {
+        gap: var(--spacing-md);
+    }
+
+    .site-nav__menu {
+        gap: var(--spacing-md);
+    }
+
+    .site-nav__link {
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+    .site-header__logo {
+        font-size: 1.6rem;
+    }
+
+    .site-header__user-text {
+        font-size: 0.8rem;
     }
 }
 
@@ -855,57 +964,134 @@ ul {
     .main-content__wrapper {
         padding: 0 var(--spacing-md);
     }
-    
-    .site-nav__icon {
-        display: block;
-    }
-    
-    .site-nav__menu {
-        position: absolute;
-        top: calc(var(--header-height) + 1rem);
-        left: -100%;
-        flex-direction: column;
-        background: var(--color-white);
-        width: 18rem;
-        padding: var(--spacing-lg);
-        border-radius: 1rem;
-        box-shadow: var(--shadow-lg);
+
+    /* Mobile Header Adjustments - Hamburger à Esquerda */
+    .site-header__container {
+        padding: 0 var(--spacing-md);
         gap: var(--spacing-md);
-        transition: left 0.3s ease;
-        z-index: 1000;
+        position: relative;
     }
-    
-    .site-nav__toggle:checked ~ .site-nav__menu {
+
+    /* Força a logo a ficar no centro absoluto */
+    .site-header__logo-link {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    /* Hamburger menu fica à esquerda */
+    .site-nav {
+        flex: 0;
+        order: 1;
+        z-index: 1001;
+    }
+
+    .site-nav__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0;
+        position: relative;
+        z-index: 1001;
+    }
+
+    /* Actions (login) fica à direita */
+    .site-header__actions {
+        order: 3;
+        flex-shrink: 0;
+        z-index: 1001;
+    }
+
+    /* Logo menor no mobile */
+    .site-header__logo {
+        font-size: 1.4rem;
+        margin: 0;
+    }
+
+    /* Esconder texto do login no mobile, mostrar apenas ícone */
+    .site-header__user-text {
+        display: none;
+    }
+
+    .site-header__user {
+        padding: 0.5rem;
+        border: none;
+    }
+
+    .site-header__user i {
+        font-size: 1.2rem;
+    }
+
+    .site-header__user:hover {
+        background: rgba(212, 175, 55, 0.1);
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* Mobile Menu */
+    .site-nav {
+        position: static;
+    }
+
+    .site-nav__menu {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 80%;
+        max-width: 20rem;
+        height: 100vh;
+        background: var(--color-white);
+        flex-direction: column;
+        padding: calc(var(--header-height) + var(--spacing-lg)) var(--spacing-lg) var(--spacing-lg);
+        gap: var(--spacing-md);
+        transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1000;
+        box-shadow: var(--shadow-lg);
+        margin: 0;
+        overflow-y: auto;
+    }
+
+    .site-nav__toggle:checked~.site-nav__menu {
         left: 0;
     }
-    
-    .site-nav__toggle:checked ~ .site-nav__icon .site-nav__hamburger {
-        background: transparent;
+
+    /* Versão mobile - linha não aparece, usa background no hover */
+    .site-nav__link::after {
+        display: none;
     }
-    
-    .site-nav__toggle:checked ~ .site-nav__icon .site-nav__hamburger::before {
-        transform: rotate(45deg);
+
+    .site-nav__link {
+        display: block;
+        padding: var(--spacing-md);
+        font-size: 1.1rem;
+        border-radius: 0.5rem;
+        white-space: normal;
+        transition: all 0.3s ease;
     }
-    
-    .site-nav__toggle:checked ~ .site-nav__icon .site-nav__hamburger::after {
-        transform: rotate(-45deg);
+
+    .site-nav__link:hover {
+        background: linear-gradient(90deg, rgba(212, 175, 55, 0.1), transparent);
+        padding-left: var(--spacing-lg);
+        transform: translateX(0);
     }
-    
+
+    /* Hero Section Mobile */
     .hero__content {
         max-width: 90%;
         padding: var(--spacing-md);
         bottom: 10%;
     }
-    
+
     .hero__subtitle {
         font-size: 0.9rem;
     }
-    
+
     .hero__cta {
         font-size: 0.8rem;
         padding: var(--spacing-xs) var(--spacing-md);
     }
-    
+
+    /* Sections Mobile */
     .sustainability,
     .testimonials,
     .vip-club,
@@ -913,35 +1099,91 @@ ul {
         padding: var(--spacing-lg);
         margin: var(--spacing-lg) 0;
     }
-    
+
     .grid--featured {
         grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
     }
-    
+
     .plan-card__price {
         font-size: 1.5rem;
     }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1025px) {
+    .site-nav__menu {
+        gap: var(--spacing-xl);
+    }
+
     .hero__content {
         max-width: 35rem;
     }
-    
+
     .hero__subtitle {
         font-size: 1.5rem;
     }
-    
+
     .hero__cta {
         font-size: 1rem;
         padding: var(--spacing-md) var(--spacing-xl);
     }
-    
+
     .section-header__title {
         font-size: 2.5rem;
     }
-    
+
     .section-header__subtitle {
         font-size: 1.1rem;
+    }
+}
+
+/* Overlay com blur quando menu está aberto */
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    cursor: pointer;
+}
+
+.menu-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Bloqueio do scroll quando menu está aberto */
+body.menu-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+}
+
+/* Performance Optimizations */
+img {
+    content-visibility: auto;
+    contain: paint;
+}
+
+/* Reduced Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .site-nav__link::after {
+        transition: none;
+    }
+
+    .site-nav__menu {
+        transition: none;
     }
 }
